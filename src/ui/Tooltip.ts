@@ -1,5 +1,5 @@
 import { TourStep } from "../types";
-import { calculateTooltipPosition, getElementPosition } from "../utils/dom";
+import { calculateTooltipPosition } from "../utils/dom";
 
 export class ToolTip {
   private container: HTMLDivElement | null = null;
@@ -26,7 +26,7 @@ export class ToolTip {
     this.container = document.createElement("div");
     this.container.className = "tour-tooltip";
     this.container.style.cssText = `
-    position: absolute;
+    position: fixed;
     z-index: 10000;
     background: white;
     border-radius: 8px;
@@ -67,8 +67,8 @@ export class ToolTip {
 
     document.body.appendChild(this.container);
 
-    //   Positioning tht tultip lol
-    const targetBounds = getElementPosition(targetElement);
+    //   Positioning the tooltip
+    const targetBounds = targetElement.getBoundingClientRect();
     const toolTipRect = this.container.getBoundingClientRect();
     const pos = calculateTooltipPosition(
       targetBounds,

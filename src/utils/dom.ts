@@ -67,7 +67,7 @@ export function getElementPosition(element: Element) {
  * calculate the best position for a tooltip
  */
 export function calculateTooltipPosition(
-  targetBounds: ReturnType<typeof getElementPosition>,
+  targetBounds: DOMRect,
   tooltipWidth: number,
   tooltipHeight: number,
   placement: "top" | "bottom" | "left" | "right" = "top"
@@ -80,7 +80,7 @@ export function calculateTooltipPosition(
   let left = 0;
   let finalPlacement = placement;
 
-  // Try requested placement
+  // Calculate positions using viewport coordinates (for fixed positioning)
   switch (placement) {
     case "top":
       top = targetBounds.top - tooltipHeight - padding;

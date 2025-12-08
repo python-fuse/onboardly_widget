@@ -1,12 +1,565 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Tour Test</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Onboardly - Product Tour Demo</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header */
+      header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .nav-links a:hover {
+        color: #667eea;
+      }
+
+      .nav-cta {
+        background: #667eea;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .nav-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      /* Hero Section */
+      .hero {
+        text-align: center;
+        padding: 4rem 0;
+        color: white;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .hero p {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+      }
+
+      .cta-button {
+        background: white;
+        color: #667eea;
+        padding: 1rem 3rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Features Section */
+      .features {
+        background: white;
+        padding: 4rem 0;
+        border-radius: 30px 30px 0 0;
+        margin-top: 3rem;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+        color: #333;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+
+      .feature-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-card p {
+        opacity: 0.9;
+        line-height: 1.6;
+      }
+
+      /* Pricing Section */
+      .pricing {
+        padding: 4rem 0;
+        background: #f8f9fa;
+      }
+
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+      }
+
+      .pricing-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+
+      .pricing-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .pricing-card.featured {
+        border: 3px solid #667eea;
+        transform: scale(1.05);
+      }
+
+      .price {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #667eea;
+        margin: 1rem 0;
+      }
+
+      .price-features {
+        list-style: none;
+        margin: 2rem 0;
+      }
+
+      .price-features li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .price-features li:before {
+        content: "✓ ";
+        color: #667eea;
+        font-weight: bold;
+      }
+
+      .pricing-button {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #667eea;
+        background: white;
+        color: #667eea;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .pricing-button:hover {
+        background: #667eea;
+        color: white;
+      }
+
+      /* Testimonials */
+      .testimonials {
+        padding: 4rem 0;
+        background: white;
+      }
+
+      .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .testimonial-card {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 15px;
+        border-left: 4px solid #667eea;
+      }
+
+      .testimonial-text {
+        font-style: italic;
+        margin-bottom: 1rem;
+        line-height: 1.8;
+      }
+
+      .testimonial-author {
+        font-weight: 600;
+        color: #667eea;
+      }
+
+      /* Footer */
+      footer {
+        background: #2d3748;
+        color: white;
+        padding: 3rem 0 1rem;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h4 {
+        margin-bottom: 1rem;
+        color: #667eea;
+      }
+
+      .footer-links {
+        list-style: none;
+      }
+
+      .footer-links li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-links a {
+        color: #cbd5e0;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .footer-links a:hover {
+        color: white;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid #4a5568;
+        color: #cbd5e0;
+      }
+
+      /* Dashboard Preview */
+      .dashboard-preview {
+        background: white;
+        padding: 4rem 0;
+      }
+
+      .dashboard-screenshot {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      }
+
+      .screenshot-placeholder {
+        background: white;
+        border-radius: 10px;
+        padding: 3rem;
+        text-align: center;
+        color: #667eea;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+    </style>
   </head>
   <body>
-    <h1 id="hero-button">Welcome to My Site</h1>
-    <div class="feature-card">Feature 1</div>
-    <button class="cta-button">Sign Up</button>
+    <!-- Header -->
+    <header>
+      <nav class="container">
+        <div class="logo">🎯 Onboardly</div>
+        <ul class="nav-links">
+          <li><a href="#features" id="nav-features">Features</a></li>
+          <li><a href="#pricing" id="nav-pricing">Pricing</a></li>
+          <li>
+            <a href="#testimonials" id="nav-testimonials">Testimonials</a>
+          </li>
+          <li><a href="#contact" id="nav-contact">Contact</a></li>
+        </ul>
+        <a href="#signup" class="nav-cta" id="nav-cta">Get Started</a>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1 id="hero-title">Create Amazing Product Tours</h1>
+        <p id="hero-subtitle">
+          Guide your users through your app with beautiful, interactive tours
+        </p>
+        <button class="cta-button" id="hero-cta">Start Free Trial</button>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <h2 class="section-title" id="features-title">Why Choose Onboardly?</h2>
+        <div class="features-grid">
+          <div class="feature-card" id="feature-easy">
+            <div class="feature-icon">🚀</div>
+            <h3>Easy Setup</h3>
+            <p>
+              Get started in minutes with our simple API. No complex
+              configuration needed.
+            </p>
+          </div>
+          <div class="feature-card" id="feature-beautiful">
+            <div class="feature-icon">✨</div>
+            <h3>Beautiful UI</h3>
+            <p>
+              Stunning tooltips and spotlights that match your brand perfectly.
+            </p>
+          </div>
+          <div class="feature-card" id="feature-smart">
+            <div class="feature-icon">🧠</div>
+            <h3>Smart Analytics</h3>
+            <p>
+              Track user engagement and optimize your onboarding flow with
+              detailed insights.
+            </p>
+          </div>
+          <div class="feature-card" id="feature-responsive">
+            <div class="feature-icon">📱</div>
+            <h3>Fully Responsive</h3>
+            <p>Works seamlessly on desktop, tablet, and mobile devices.</p>
+          </div>
+          <div class="feature-card" id="feature-custom">
+            <div class="feature-icon">🎨</div>
+            <h3>Customizable</h3>
+            <p>
+              Style everything to match your brand with CSS variables and
+              themes.
+            </p>
+          </div>
+          <div class="feature-card" id="feature-fast">
+            <div class="feature-icon">⚡</div>
+            <h3>Lightning Fast</h3>
+            <p>
+              Tiny bundle size and optimized performance for the best user
+              experience.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="dashboard-preview">
+      <div class="container">
+        <h2 class="section-title" id="dashboard-title">See It In Action</h2>
+        <div class="dashboard-screenshot" id="dashboard-preview">
+          <div class="screenshot-placeholder">
+            📊 Interactive Dashboard Preview
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <h2 class="section-title" id="pricing-title">
+          Simple, Transparent Pricing
+        </h2>
+        <div class="pricing-grid">
+          <div class="pricing-card" id="plan-starter">
+            <h3>Starter</h3>
+            <div class="price">$29<span style="font-size: 1rem">/mo</span></div>
+            <ul class="price-features">
+              <li>Up to 1,000 tours/month</li>
+              <li>Basic analytics</li>
+              <li>Email support</li>
+              <li>Custom branding</li>
+            </ul>
+            <button class="pricing-button">Choose Starter</button>
+          </div>
+          <div class="pricing-card featured" id="plan-pro">
+            <h3>Professional</h3>
+            <div class="price">$99<span style="font-size: 1rem">/mo</span></div>
+            <ul class="price-features">
+              <li>Up to 10,000 tours/month</li>
+              <li>Advanced analytics</li>
+              <li>Priority support</li>
+              <li>A/B testing</li>
+              <li>Custom themes</li>
+            </ul>
+            <button class="pricing-button">Choose Pro</button>
+          </div>
+          <div class="pricing-card" id="plan-enterprise">
+            <h3>Enterprise</h3>
+            <div class="price">
+              $299<span style="font-size: 1rem">/mo</span>
+            </div>
+            <ul class="price-features">
+              <li>Unlimited tours</li>
+              <li>White-label solution</li>
+              <li>Dedicated support</li>
+              <li>Custom integrations</li>
+              <li>SLA guarantee</li>
+            </ul>
+            <button class="pricing-button">Contact Sales</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+      <div class="container">
+        <h2 class="section-title" id="testimonials-title">
+          What Our Customers Say
+        </h2>
+        <div class="testimonial-grid">
+          <div class="testimonial-card" id="testimonial-1">
+            <p class="testimonial-text">
+              "Onboardly transformed our user onboarding. Our activation rate
+              increased by 40% in the first month!"
+            </p>
+            <p class="testimonial-author">
+              — Sarah Chen, Product Manager at TechCorp
+            </p>
+          </div>
+          <div class="testimonial-card" id="testimonial-2">
+            <p class="testimonial-text">
+              "The easiest tour library we've ever used. Setup took less than an
+              hour and it looks amazing."
+            </p>
+            <p class="testimonial-author">
+              — Michael Rodriguez, CTO at StartupXYZ
+            </p>
+          </div>
+          <div class="testimonial-card" id="testimonial-3">
+            <p class="testimonial-text">
+              "Outstanding support team and the analytics dashboard gives us
+              insights we never had before."
+            </p>
+            <p class="testimonial-author">
+              — Emma Watson, Head of UX at DesignHub
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>Product</h4>
+            <ul class="footer-links">
+              <li><a href="#features">Features</a></li>
+              <li><a href="#pricing">Pricing</a></li>
+              <li><a href="#docs">Documentation</a></li>
+              <li><a href="#api">API Reference</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Company</h4>
+            <ul class="footer-links">
+              <li><a href="#about">About Us</a></li>
+              <li><a href="#blog">Blog</a></li>
+              <li><a href="#careers">Careers</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Resources</h4>
+            <ul class="footer-links">
+              <li><a href="#guides">Guides</a></li>
+              <li><a href="#examples">Examples</a></li>
+              <li><a href="#community">Community</a></li>
+              <li><a href="#support">Support</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Legal</h4>
+            <ul class="footer-links">
+              <li><a href="#privacy">Privacy Policy</a></li>
+              <li><a href="#terms">Terms of Service</a></li>
+              <li><a href="#security">Security</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Onboardly. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
 
     <!-- Import as ES module during dev (Vite serves /src/main.ts directly) -->
     <script type="module">
@@ -22,43 +575,88 @@
           }
 
           window.TourWidget.initWithConfig({
-            tourId: "test",
+            tourId: "demo-tour",
             autoStart: true,
             steps: [
               {
-                id: "1",
-                targetSelector: "#hero-button",
-                title: "Step 1",
-                content: "This is the hero",
+                id: "welcome",
+                targetSelector: "#hero-title",
+                title: "👋 Welcome to Onboardly!",
+                content:
+                  "Let's take a quick tour to show you how our product tour system works. Click Next to continue.",
                 placement: "bottom",
               },
               {
-                id: "2",
-                targetSelector: ".feature-card",
-                title: "Step 2",
-                content: "Check features",
+                id: "cta",
+                targetSelector: "#hero-cta",
+                title: "🚀 Get Started",
+                content:
+                  "This is your main call-to-action button. Notice how the spotlight highlights it perfectly!",
                 placement: "bottom",
               },
               {
-                id: "3",
-                targetSelector: ".cta-button",
-                title: "Step 3",
-                content: "Sign up here",
+                id: "nav",
+                targetSelector: "#nav-cta",
+                title: "📍 Navigation",
+                content:
+                  "Your navigation is sticky and always accessible. Users can jump to any section quickly.",
+                placement: "bottom",
+              },
+              {
+                id: "features",
+                targetSelector: "#features-title",
+                title: "✨ Key Features",
+                content:
+                  "Here we showcase the main features of your product. Each card is interactive and eye-catching.",
+                placement: "bottom",
+              },
+              {
+                id: "feature-card",
+                targetSelector: "#feature-easy",
+                title: "🎯 Feature Highlighting",
+                content:
+                  "Individual features can be highlighted like this. Perfect for drawing attention to specific benefits.",
                 placement: "right",
               },
               {
-                id: "4",
-                targetSelector: "#hero-button",
-                title: "Step 4",
-                content: "Back to top",
-                placement: "bottom",
+                id: "analytics",
+                targetSelector: "#feature-smart",
+                title: "📊 Smart Analytics",
+                content:
+                  "Track how users interact with your tours. See completion rates, drop-off points, and more.",
+                placement: "left",
               },
               {
-                id: "5",
-                targetSelector: ".cta-button",
-                title: "Final Step",
-                content: "All done!",
+                id: "dashboard",
+                targetSelector: "#dashboard-preview",
+                title: "🖥️ Dashboard Preview",
+                content:
+                  "Show off your product with beautiful preview sections that scroll into view automatically.",
+                placement: "top",
+              },
+              {
+                id: "pricing",
+                targetSelector: "#plan-pro",
+                title: "💎 Pricing Plans",
+                content:
+                  "This featured plan stands out with special styling. Notice how the tour scrolls to show it.",
+                placement: "top",
+              },
+              {
+                id: "testimonial",
+                targetSelector: "#testimonial-1",
+                title: "💬 Social Proof",
+                content:
+                  "Testimonials build trust. Highlight your best reviews to convert more visitors.",
                 placement: "right",
+              },
+              {
+                id: "footer",
+                targetSelector: "#footer",
+                title: "🎉 Tour Complete!",
+                content:
+                  "That's it! You've seen how Onboardly can guide users through any website. Ready to get started?",
+                placement: "top",
               },
             ],
           });

@@ -55,7 +55,7 @@ export class StepManager {
     this.state.completed = true;
   }
 
-  private reset() {
+  reset() {
     this.state = {
       currentStepIndex: 0,
       completed: false,

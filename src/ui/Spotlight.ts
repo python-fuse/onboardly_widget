@@ -1,5 +1,3 @@
-import { getElementPosition } from "../utils/dom";
-
 export class Spotlight {
   private overlay: HTMLDivElement | null = null;
   private clone: HTMLElement | null = null;
@@ -22,19 +20,38 @@ export class Spotlight {
     transition: opacity 0.3s ease;
     `;
 
-    const bounds = getElementPosition(targetElemnt);
+    const bounds = targetElemnt.getBoundingClientRect();
+    const computedStyle = window.getComputedStyle(targetElemnt);
+
     this.clone = (targetElemnt as HTMLElement).cloneNode(true) as HTMLElement;
     this.clone.className = "tour-spotlight-clone";
+
+    // Copy computed styles from original element
     this.clone.style.cssText = `
-    position: absolute;
+    position: fixed;
     top: ${bounds.top}px;
     left: ${bounds.left}px;
     width: ${bounds.width}px;
     height: ${bounds.height}px;
     z-index: 9999;
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 9999px rgba(0, 0, 0, 0.7);
-    border-radius: 4px;
+    border-radius: ${computedStyle.borderRadius};
     transition: all 0.3s ease;
+    pointer-events: none;
+    background: ${computedStyle.background};
+    background-color: ${computedStyle.backgroundColor};
+    background-image: ${computedStyle.backgroundImage};
+    color: ${computedStyle.color};
+    font-family: ${computedStyle.fontFamily};
+    font-size: ${computedStyle.fontSize};
+    font-weight: ${computedStyle.fontWeight};
+    line-height: ${computedStyle.lineHeight};
+    padding: ${computedStyle.padding};
+    border: ${computedStyle.border};
+    text-align: ${computedStyle.textAlign};
+    display: ${computedStyle.display};
+    align-items: ${computedStyle.alignItems};
+    justify-content: ${computedStyle.justifyContent};
     `;
 
     document.body.appendChild(this.overlay);
