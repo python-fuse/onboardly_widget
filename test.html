@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tour Test</title>
+  </head>
+  <body>
+    <h1 id="hero-button">Welcome to My Site</h1>
+    <div class="feature-card">Feature 1</div>
+    <button class="cta-button">Sign Up</button>
+
+    <!-- Import as ES module during dev (Vite serves /src/main.ts directly) -->
+    <script type="module">
+      import "/src/main.ts";
+
+      // Wait for the widget to be registered on window
+      window.addEventListener("DOMContentLoaded", () => {
+        // Small delay to ensure main.ts has executed
+        setTimeout(() => {
+          if (!window.TourWidget) {
+            console.error("TourWidget not found on window!");
+            return;
+          }
+
+          window.TourWidget.initWithConfig({
+            tourId: "test",
+            autoStart: true,
+            steps: [
+              {
+                id: "1",
+                targetSelector: "#hero-button",
+                title: "Step 1",
+                content: "This is the hero",
+                placement: "bottom",
+              },
+              {
+                id: "2",
+                targetSelector: ".feature-card",
+                title: "Step 2",
+                content: "Check features",
+                placement: "bottom",
+              },
+              {
+                id: "3",
+                targetSelector: ".cta-button",
+                title: "Step 3",
+                content: "Sign up here",
+                placement: "right",
+              },
+              {
+                id: "4",
+                targetSelector: "#hero-button",
+                title: "Step 4",
+                content: "Back to top",
+                placement: "bottom",
+              },
+              {
+                id: "5",
+                targetSelector: ".cta-button",
+                title: "Final Step",
+                content: "All done!",
+                placement: "right",
+              },
+            ],
+          });
+        }, 100);
+      });
+    </script>
+  </body>
+</html>

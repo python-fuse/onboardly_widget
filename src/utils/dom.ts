@@ -70,7 +70,7 @@ export function calculateTooltipPosition(
   targetBounds: ReturnType<typeof getElementPosition>,
   tooltipWidth: number,
   tooltipHeight: number,
-  placement: "top" | "bottom" | "left" | "right" = "bottom"
+  placement: "top" | "bottom" | "left" | "right" = "top"
 ) {
   const padding = 16;
   const viewportWidth = window.innerWidth;

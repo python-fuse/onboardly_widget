@@ -13,6 +13,7 @@ export default defineConfig({
         entryFileNames: "onboardly.js",
         assetFileNames: "onboardly.[ext]",
         extend: true,
+        inlineDynamicImports: true,
       },
     },
     minify: "terser",
