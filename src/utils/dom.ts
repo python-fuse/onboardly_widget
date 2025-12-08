@@ -37,8 +37,7 @@ export function waitForElement(
 /**
  * Scroll element into view smoothly
  */
-export function scrollToElement(selector: string): void {
-  const element = document.querySelector(selector);
+export function scrollToElement(element: Element): void {
   if (element) {
     element.scrollIntoView({
       behavior: "smooth",

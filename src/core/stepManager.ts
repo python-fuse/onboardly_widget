@@ -38,7 +38,7 @@ export class StepManager {
     this.saveState();
   }
 
-  isComleted() {
+  isCompleted() {
     return this.state.completed;
   }
 
@@ -49,6 +49,10 @@ export class StepManager {
   private loadState() {
     const saved = localStorage.getItem(`tour_${this.tourId}`);
     if (saved) this.state = JSON.parse(saved);
+  }
+
+  complete() {
+    this.state.completed = true;
   }
 
   private reset() {
