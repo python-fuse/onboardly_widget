@@ -1,0 +1,58 @@
+import { getElementPosition } from "../utils/dom";
+
+export class Spotlight {
+  private overlay: HTMLDivElement | null = null;
+  private clone: HTMLElement | null = null;
+
+  show(targetElemnt: Element) {
+    this.hide();
+
+    // Create dark overlay
+    this.overlay = document.createElement("div");
+    this.overlay.className = "tour-overlay";
+    this.overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.7);
+    z-index: 9998;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    `;
+
+    const bounds = getElementPosition(targetElemnt);
+    this.clone = (targetElemnt as HTMLElement).cloneNode(true) as HTMLElement;
+    this.clone.className = "tour-spotlight-clone";
+    this.clone.style.cssText = `
+    position: absolute;
+    top: ${bounds.top}px;
+    left: ${bounds.left}px;
+    width: ${bounds.width}px;
+    height: ${bounds.height}px;
+    z-index: 9999;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 9999px rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    `;
+
+    document.body.appendChild(this.overlay);
+    document.body.appendChild(this.clone);
+
+    // fade in
+    requestAnimationFrame(() => {
+      if (this.overlay) this.overlay.style.opacity = "1";
+    });
+  }
+  hide() {
+    if (this.overlay) {
+      this.overlay.remove();
+      this.overlay = null;
+    }
+    if (this.clone) {
+      this.clone.remove();
+      this.clone = null;
+    }
+  }
+}
