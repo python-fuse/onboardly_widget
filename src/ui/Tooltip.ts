@@ -195,3 +195,63 @@ export class ToolTip {
     return styles[type] + ' cursor: pointer; transition: all 0.2s ease;';
   }
 
+  private positionTooltip(targetElement: Element, placement?: string): void {
+    if (!this.container) return;
+    
+    const targetBounds = targetElement.getBoundingClientRect();
+    const toolTipRect = this.container.getBoundingClientRect();
+    
+    let pos;
+    if (this.isMobile) {
+      // Center on mobile, positioned above target or below if no space
+      const aboveTarget = targetBounds.top - toolTipRect.height - 20;
+      const belowTarget = targetBounds.bottom + 20;
+      
+      if (aboveTarget > 20) {
+        // Position above target
+        pos = {
+          top: aboveTarget,
+          left: window.innerWidth / 2
+        };
+      } else {
+        // Position below target
+        pos = {
+          top: Math.min(belowTarget, window.innerHeight - toolTipRect.height - 20),
+          left: window.innerWidth / 2
+        };
+      }
+    } else {
+      pos = calculateTooltipPosition(
+        targetBounds,
+        toolTipRect.width,
+        toolTipRect.height,
+        placement || 'top'
+      );
+    }
+
+    this.container.style.top = `${pos.top}px`;
+    if (!this.isMobile) {
+      this.container.style.left = `${pos.left}px`;
+    }
+  }
+
+  private createModernArrow(targetElement: Element, placement: string): void {
+    this.arrow = document.createElement('div');
+    const arrowSize = 20;
+    const targetBounds = targetElement.getBoundingClientRect();
+    const tooltipBounds = this.container!.getBoundingClientRect();
+    
+    let arrowStyles = `
+      position: fixed;
+      width: ${arrowSize}px;
+      height: ${arrowSize}px;
+      background: rgba(89, 13, 242, 0.15);
+      backdrop-filter: blur(12px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    `;
+    
