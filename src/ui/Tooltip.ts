@@ -301,3 +301,113 @@ export class ToolTip {
 
   private addHoverEffects(): void {
     if (!this.container) return;
+
+    // Card hover effect
+    this.container.addEventListener('mouseenter', () => {
+      this.container!.style.boxShadow = '0 25px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15) inset';
+      this.container!.style.transform = 'scale(1.02) translateY(-2px)';
+    });
+    
+    this.container.addEventListener('mouseleave', () => {
+      this.container!.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset';
+      this.container!.style.transform = 'scale(1) translateY(0)';
+    });
+
+    // Button hover effects
+    const addHover = (selector: string, enter: (el: HTMLElement) => void, leave: (el: HTMLElement) => void) => {
+      const el = this.container!.querySelector(selector) as HTMLElement;
+      if (el) {
+        el.addEventListener('mouseenter', () => enter(el));
+        el.addEventListener('mouseleave', () => leave(el));
+      }
+    };
+
+    // Next button
+    addHover('.tour-btn-next', 
+      (el) => {
+        el.style.transform = 'translateY(-2px)';
+        el.style.boxShadow = '0 8px 30px rgba(89, 13, 242, 0.6)';
+        el.style.background = 'linear-gradient(135deg, #6a1bf9, #9b4cf9)';
+      },
+      (el) => {
+        el.style.transform = '';
+        el.style.boxShadow = '0 4px 20px rgba(89, 13, 242, 0.4)';
+        el.style.background = 'linear-gradient(135deg, #590df2, #8a2be2)';
+      }
+    );
+
+    // Back button (only if not disabled)
+    addHover('.tour-btn-prev:not(:disabled)',
+      (el) => {
+        el.style.background = 'rgba(89, 13, 242, 0.45)';
+        el.style.transform = 'translateY(-2px)';
+      },
+      (el) => {
+        el.style.background = 'rgba(89, 13, 242, 0.33)';
+        el.style.transform = '';
+      }
+    );
+
+    // Skip button
+    addHover('.tour-btn-skip',
+      (el) => {
+        el.style.background = 'rgba(255, 255, 255, 0.15)';
+        el.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+      },
+      (el) => {
+        el.style.background = 'rgba(255, 255, 255, 0.08)';
+        el.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+      }
+    );
+
+    // Close button
+    addHover('.tour-btn-close',
+      (el) => {
+        el.style.background = 'rgba(255, 255, 255, 0.2)';
+        el.style.transform = 'rotate(90deg)';
+      },
+      (el) => {
+        el.style.background = 'rgba(255, 255, 255, 0.1)';
+        el.style.transform = 'rotate(0deg)';
+      }
+    );
+  }
+
+  private animateIn(): void {
+    requestAnimationFrame(() => {
+      if (this.container) {
+        this.container.style.opacity = "1";
+        this.container.style.transform = this.isMobile 
+          ? "translateX(-50%) scale(1) translateY(0)"
+          : "scale(1) translateY(0)";
+      }
+      if (this.arrow && !this.isMobile) {
+        this.arrow.style.opacity = "1";
+        // Replace scale(0) with scale(1) in the transform
+        const currentTransform = this.arrow.style.transform;
+        this.arrow.style.transform = currentTransform.replace('scale(0)', 'scale(1)');
+      }
+    });
+  }
+
+  hide(): void {
+    if (this.arrow) {
+      this.arrow.remove();
+      this.arrow = null;
+    }
+    
+    if (this.container) {
+      this.container.style.opacity = "0";
+      this.container.style.transform = this.isMobile
+        ? "translateX(-50%) scale(0.95) translateY(10px)"
+        : "scale(0.95) translateY(10px)";
+      
+      setTimeout(() => {
+        if (this.container) {
+          this.container.remove();
+          this.container = null;
+        }
+      }, 200);
+    }
+  }
+}
