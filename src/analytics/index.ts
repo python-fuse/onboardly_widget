@@ -4,7 +4,7 @@ export function trackEvent(
   data?: Record<string, any>
 ): void {
   // Send to your dashboard API
-  fetch("https://your-api.com/api/analytics", {
+  fetch("https://befitting-chicken-939.convex.site/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

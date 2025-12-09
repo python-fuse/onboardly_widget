@@ -16,12 +16,18 @@ export class TourEngine {
     this.stepManager = new StepManager(config.tourId);
 
     // Check if already completed
-    if (this.stepManager.isCompleted() && !config.autoStart) {
+    if (this.stepManager.isCompleted()) {
       return;
     }
 
     trackEvent(config.tourId, "tour_started");
     await this.showStep(this.stepManager.getCurrentStepIndex());
+  }
+
+  reset(){
+    this.stepManager?.reset();
+    this.spotlight.hide();
+    this.tooltip.hide();
   }
 
   private async showStep(index: number) {
@@ -104,4 +110,5 @@ export class TourEngine {
     this.spotlight.hide();
     this.tooltip.hide();
   }
+  
 }

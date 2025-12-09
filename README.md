@@ -38,65 +38,61 @@ The compiled library will be in the `dist/` folder.
 
 ## Usage
 
-### Basic Setup
+### 1. Include the Widget
+
+Add the widget script to your website's `<body>`.
+
+**For Production (CDN / Hosting):**
+```html
+<script src="https://your-cdn-domain.com/onboardly.js"></script>
+```
+
+**For Local Development:**
+```html
+<script src="./dist/onboardly.js"></script>
+```
+
+### 2. Initialize the Tour
+
+Initialize the widget with your configuration after the page loads.
 
 ```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>My App</title>
-  </head>
-  <body>
-    <h1 id="welcome">Welcome!</h1>
-    <button class="cta">Get Started</button>
-
-    <!-- Include the widget -->
-    <script src="/dist/onboardly.js"></script>
-
-    <script>
-      // Initialize with your tour configuration
+<script>
+  window.addEventListener('load', function() {
+    if (window.TourWidget) {
       window.TourWidget.initWithConfig({
-        tourId: "my-app-tour",
+        tourId: 'my-app-tour',
         autoStart: true,
         steps: [
           {
-            id: "step-1",
-            targetSelector: "#welcome",
-            title: "Welcome!",
-            content: "Let's show you around.",
-            placement: "bottom",
+            id: 'step-1',
+            targetSelector: '#welcome-element',
+            title: 'Welcome!',
+            content: 'This is the first step of your tour.',
+            placement: 'bottom'
           },
-          {
-            id: "step-2",
-            targetSelector: ".cta",
-            title: "Get Started",
-            content: "Click here to begin.",
-            placement: "top",
-          },
-        ],
+          // ... more steps
+        ]
       });
-    </script>
-  </body>
-</html>
+    }
+  });
+</script>
 ```
 
 ### Development Mode (ES Modules)
 
-For development with Vite:
+For contributing to the library itself, you can use ES modules directly:
 
 ```html
 <script type="module">
   import "/src/main.ts";
-
-  window.addEventListener("DOMContentLoaded", () => {
-    setTimeout(() => {
-      window.TourWidget.initWithConfig({
-        // your config here
-      });
-    }, 100);
-  });
+  // ... initialization logic
 </script>
 ```
+
+## Deployment
+
+For detailed instructions on building, hosting, and testing the widget in production, please see **[DEPLOYMENT.md](./DEPLOYMENT.md)**.
 
 ## Configuration
 

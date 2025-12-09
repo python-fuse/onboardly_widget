@@ -53,6 +53,8 @@ export class StepManager {
 
   complete() {
     this.state.completed = true;
+    console.log(this.state)
+    this.saveState();
   }
 
   reset() {
