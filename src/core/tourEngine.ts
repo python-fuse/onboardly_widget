@@ -16,7 +16,7 @@ export class TourEngine {
     this.stepManager = new StepManager(config.tourId);
 
     // Check if already completed
-    if (this.stepManager.isCompleted() && !config.autoStart) {
+    if (this.stepManager.isCompleted()) {
       return;
     }
 
