@@ -3,9 +3,11 @@ import { calculateTooltipPosition } from "../utils/dom";
 
 export class ToolTip {
   private container: HTMLDivElement | null = null;
+  private arrow: HTMLDivElement | null = null;
   private onNext?: () => void;
   private onPrev?: () => void;
   private onSkip?: () => void;
+  private isMobile = window.innerWidth < 768;
 
   show(
     step: TourStep,
@@ -22,87 +24,174 @@ export class ToolTip {
     this.onNext = handlers.onNext;
     this.onPrev = handlers.onPrev;
     this.onSkip = handlers.onSkip;
+    this.isMobile = window.innerWidth < 768;
 
+    this.createContainer(step, currentIndex, totalSteps);
+    this.positionTooltip(targetElement, step.placement);
+    
+    if (!this.isMobile) {
+      this.createModernArrow(targetElement, step.placement || 'top');
+    }
+
+    this.attachEventListeners(currentIndex === 0);
+    this.animateIn();
+  }
+
+  private createContainer(step: TourStep, currentIndex: number, totalSteps: number): void {
     this.container = document.createElement("div");
     this.container.className = "tour-tooltip";
-    this.container.style.cssText = `
-    position: fixed;
-    z-index: 10000;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    max-width: 400px;
-    min-width: 300px;
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    `;
+    
+    const isFirstStep = currentIndex === 0;
+    const isLastStep = currentIndex === totalSteps - 1;
+    const progressPercentage = ((currentIndex + 1) / totalSteps) * 100;
 
-    // Building the content..... omooooooorrrhhhhh
-    this.container.innerHTML = `
-    <div class="tour-tooltip-header">
-        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600;">${
-          step.title
-        }</h3>
-        <div style="font-size: 12px; color: #666;">Step ${
-          currentIndex + 1
-        } of ${totalSteps}</div>
+    // Apply base styles using Object.assign to avoid CSS conflicts
+    const baseStyles: any = {
+      position: 'fixed',
+      zIndex: '10000',
+      background: 'rgba(89, 13, 242, 0.15)',
+      backdropFilter: 'blur(12px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+      border: '1px solid rgba(255, 255, 255, 0.18)',
+      borderRadius: '16px',
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      boxSizing: 'border-box',
+      color: '#FFFFFF',
+      opacity: '0',
+      transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+    };
+
+    if (this.isMobile) {
+      // Mobile styles
+      Object.assign(this.container.style, baseStyles, {
+        padding: '20px',
+        maxWidth: 'calc(100vw - 40px)',
+        width: 'calc(100vw - 40px)',
+        margin: '0 20px',
+        left: '50%',
+        transform: 'translateX(-50%) scale(0.95) translateY(10px)'
+      });
+      this.container.innerHTML = this.getMobileHTML(step, currentIndex, totalSteps, isFirstStep, isLastStep, progressPercentage);
+    } else {
+      // Desktop styles
+      Object.assign(this.container.style, baseStyles, {
+        padding: '24px',
+        maxWidth: '400px',
+        minWidth: '320px',
+        transform: 'scale(0.95) translateY(10px)'
+      });
+      this.container.innerHTML = this.getDesktopHTML(step, currentIndex, totalSteps, isFirstStep, isLastStep, progressPercentage);
+    }
+
+    document.body.appendChild(this.container);
+  }
+
+  private getMobileHTML(step: TourStep, currentIndex: number, totalSteps: number, 
+                       isFirstStep: boolean, isLastStep: boolean, progressPercentage: number): string {
+    const buttonStyle = this.getButtonStyle;
+    
+    return `
+      <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+          <h3 style="margin: 0; font-size: 17px; font-weight: 600; color: #FFFFFF; line-height: 1.3; flex: 1;">
+            ${step.title}
+          </h3>
+          <button class="tour-btn-close" style="${buttonStyle('close', true)}" aria-label="Close tour">
+            ×
+          </button>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div style="font-size: 14px; color: rgba(255, 255, 255, 0.8); white-space: nowrap;">
+            Step ${currentIndex + 1} of ${totalSteps}
+          </div>
+          <div style="flex: 1; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);">
+            <div style="width: ${progressPercentage}%; height: 100%; background: linear-gradient(90deg, #590df2, #8a2be2); border-radius: 3px;"></div>
+          </div>
+        </div>
+        
+        <div style="margin: 16px 0; line-height: 1.6; color: rgba(255, 255, 255, 0.9); font-size: 15px;">
+          ${step.content}
+        </div>
       </div>
-      <div class="tour-tooltip-content" style="margin: 16px 0; line-height: 1.6; color: #333;">
-        ${step.content}
-      </div>
-      <div class="tour-tooltip-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
-        <button class="tour-btn-skip" style="background: none; border: none; color: #666; cursor: pointer; font-size: 14px;">Skip Tour</button>
-        <div style="display: flex; gap: 8px;">
-          <button class="tour-btn-prev" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer; font-size: 14px;" ${
-            currentIndex === 0 ? "disabled" : ""
-          }>Back</button>
-          <button class="tour-btn-next" style="padding: 8px 16px; border: none; border-radius: 4px; background: #0066ff; color: white; cursor: pointer; font-size: 14px; font-weight: 500;">
-            ${currentIndex === totalSteps - 1 ? "Finish" : "Next"}
+      
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+        <button class="tour-btn-skip" style="${buttonStyle('skip', true)}">
+          ${isLastStep ? 'Close' : 'Skip Tour'}
+        </button>
+        
+        <div style="display: flex; gap: 12px;">
+          <button class="tour-btn-prev" style="${buttonStyle('back', true)}" ${isFirstStep ? 'disabled' : ''}>
+            Back
+          </button>
+          
+          <button class="tour-btn-next" style="${buttonStyle('next', true)}">
+            ${isLastStep ? 'Finish' : 'Next'}
           </button>
         </div>
       </div>
     `;
-
-    document.body.appendChild(this.container);
-
-    //   Positioning the tooltip
-    const targetBounds = targetElement.getBoundingClientRect();
-    const toolTipRect = this.container.getBoundingClientRect();
-    const pos = calculateTooltipPosition(
-      targetBounds,
-      toolTipRect.width,
-      toolTipRect.height,
-      step.placement
-    );
-
-    this.container.style.top = `${pos.top}px`;
-    this.container.style.left = `${pos.left}px`;
-
-    // Attach ev listeners
-    this.container
-      .querySelector(".tour-btn-next")
-      ?.addEventListener("click", () => this.onNext?.());
-    this.container
-      .querySelector(".tour-btn-prev")
-      ?.addEventListener("click", () => this.onPrev?.());
-    this.container
-      .querySelector(".tour-btn-skip")
-      ?.addEventListener("click", () => this.onSkip?.());
-
-    //   fade in
-    requestAnimationFrame(() => {
-      if (this.container) {
-        this.container.style.opacity = "1";
-        this.container.style.transform = "scale(1)";
-      }
-    });
   }
-  hide() {
-    if (this.container) {
-      this.container.remove();
-      this.container = null;
-    }
+
+  private getDesktopHTML(step: TourStep, currentIndex: number, totalSteps: number,
+                        isFirstStep: boolean, isLastStep: boolean, progressPercentage: number): string {
+    const buttonStyle = this.getButtonStyle;
+    
+    return `
+      <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+          <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #FFFFFF; line-height: 1.3; flex: 1;">
+            ${step.title}
+          </h3>
+          <button class="tour-btn-close" style="${buttonStyle('close')}" aria-label="Close tour">
+            ×
+          </button>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+          <div style="font-size: 14px; color: rgba(255, 255, 255, 0.8); white-space: nowrap;">
+            Step ${currentIndex + 1} of ${totalSteps}
+          </div>
+          <div style="flex: 1; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);">
+            <div style="width: ${progressPercentage}%; height: 100%; background: linear-gradient(90deg, #590df2, #8a2be2); border-radius: 3px;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin: 20px 0; line-height: 1.6; color: rgba(255, 255, 255, 0.9); font-size: 15px;">
+        ${step.content}
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; gap: 12px;">
+        <button class="tour-btn-skip" style="${buttonStyle('skip')}">
+          ${isLastStep ? 'Close' : 'Skip Tour'}
+        </button>
+        
+        <div style="display: flex; gap: 12px;">
+          <button class="tour-btn-prev" style="${buttonStyle('back')}" ${isFirstStep ? 'disabled' : ''}>
+            Back
+          </button>
+          
+          <button class="tour-btn-next" style="${buttonStyle('next')}">
+            ${isLastStep ? 'Finish' : 'Next'}
+          </button>
+        </div>
+      </div>
+    `;
   }
-}
+
+  private getButtonStyle(type: 'next' | 'back' | 'skip' | 'close', mobile = false): string {
+    const base = mobile ? 'padding: 14px 16px; font-size: 15px;' : 'padding: 10px 20px; font-size: 14px;';
+    const borderRadius = mobile ? '12px' : '10px';
+    
+    const styles = {
+      next: `${base} border: none; border-radius: ${borderRadius}; background: linear-gradient(135deg, #590df2, #8a2be2); color: white; font-weight: 600; box-shadow: 0 4px 20px rgba(89, 13, 242, 0.4);`,
+      back: `${base} border: none; border-radius: ${borderRadius}; background: rgba(89, 13, 242, 0.33); color: #FFFFFF;`,
+      skip: `${base} border: 1px solid rgba(255, 255, 255, 0.15); border-radius: ${borderRadius}; background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.9);`,
+      close: `padding: ${mobile ? '6px' : '4px'}; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #FFFFFF; font-size: ${mobile ? '20px' : '18px'}; width: ${mobile ? '36px' : '32px'}; height: ${mobile ? '36px' : '32px'}; display: flex; align-items: center; justify-content: center;`
+    };
+    
+    return styles[type] + ' cursor: pointer; transition: all 0.2s ease;';
+  }
+
