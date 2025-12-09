@@ -255,3 +255,22 @@ export class ToolTip {
       transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     `;
     
+    switch (placement) {
+      case 'top':
+        arrowStyles += `top: ${tooltipBounds.bottom - arrowSize/2}px; left: ${targetBounds.left + targetBounds.width / 2}px; transform: translateX(-50%) rotate(45deg) scale(0); border-right: none; border-bottom: none;`;
+        break;
+      case 'bottom':
+        arrowStyles += `top: ${tooltipBounds.top - arrowSize/2}px; left: ${targetBounds.left + targetBounds.width / 2}px; transform: translateX(-50%) rotate(45deg) scale(0); border-left: none; border-top: none;`;
+        break;
+      case 'left':
+        arrowStyles += `top: ${targetBounds.top + targetBounds.height / 2}px; left: ${tooltipBounds.right - arrowSize/2}px; transform: translateY(-50%) rotate(45deg) scale(0); border-right: none; border-top: none;`;
+        break;
+      case 'right':
+        arrowStyles += `top: ${targetBounds.top + targetBounds.height / 2}px; left: ${tooltipBounds.left - arrowSize/2}px; transform: translateY(-50%) rotate(45deg) scale(0); border-left: none; border-bottom: none;`;
+        break;
+    }
+    
+    this.arrow.style.cssText = arrowStyles;
+    document.body.appendChild(this.arrow);
+  }
+
