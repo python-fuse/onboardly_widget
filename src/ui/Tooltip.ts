@@ -197,3 +197,217 @@ export class ToolTip {
 
   private positionTooltip(targetElement: Element, placement?: string): void {
     if (!this.container) return;
+    
+    const targetBounds = targetElement.getBoundingClientRect();
+    const toolTipRect = this.container.getBoundingClientRect();
+    
+    let pos;
+    if (this.isMobile) {
+      // Center on mobile, positioned above target or below if no space
+      const aboveTarget = targetBounds.top - toolTipRect.height - 20;
+      const belowTarget = targetBounds.bottom + 20;
+      
+      if (aboveTarget > 20) {
+        // Position above target
+        pos = {
+          top: aboveTarget,
+          left: window.innerWidth / 2
+        };
+      } else {
+        // Position below target
+        pos = {
+          top: Math.min(belowTarget, window.innerHeight - toolTipRect.height - 20),
+          left: window.innerWidth / 2
+        };
+      }
+    } else {
+      pos = calculateTooltipPosition(
+        targetBounds,
+        toolTipRect.width,
+        toolTipRect.height,
+        placement || 'top'
+      );
+    }
+
+    this.container.style.top = `${pos.top}px`;
+    if (!this.isMobile) {
+      this.container.style.left = `${pos.left}px`;
+    }
+  }
+
+  private createModernArrow(targetElement: Element, placement: string): void {
+    this.arrow = document.createElement('div');
+    const arrowSize = 20;
+    const targetBounds = targetElement.getBoundingClientRect();
+    const tooltipBounds = this.container!.getBoundingClientRect();
+    
+    let arrowStyles = `
+      position: fixed;
+      width: ${arrowSize}px;
+      height: ${arrowSize}px;
+      background: rgba(89, 13, 242, 0.15);
+      backdrop-filter: blur(12px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    `;
+    
+    switch (placement) {
+      case 'top':
+        arrowStyles += `top: ${tooltipBounds.bottom - arrowSize/2}px; left: ${targetBounds.left + targetBounds.width / 2}px; transform: translateX(-50%) rotate(45deg) scale(0); border-right: none; border-bottom: none;`;
+        break;
+      case 'bottom':
+        arrowStyles += `top: ${tooltipBounds.top - arrowSize/2}px; left: ${targetBounds.left + targetBounds.width / 2}px; transform: translateX(-50%) rotate(45deg) scale(0); border-left: none; border-top: none;`;
+        break;
+      case 'left':
+        arrowStyles += `top: ${targetBounds.top + targetBounds.height / 2}px; left: ${tooltipBounds.right - arrowSize/2}px; transform: translateY(-50%) rotate(45deg) scale(0); border-right: none; border-top: none;`;
+        break;
+      case 'right':
+        arrowStyles += `top: ${targetBounds.top + targetBounds.height / 2}px; left: ${tooltipBounds.left - arrowSize/2}px; transform: translateY(-50%) rotate(45deg) scale(0); border-left: none; border-bottom: none;`;
+        break;
+    }
+    
+    this.arrow.style.cssText = arrowStyles;
+    document.body.appendChild(this.arrow);
+  }
+
+  private attachEventListeners(isFirstStep: boolean): void {
+    if (!this.container) return;
+
+    const addClick = (selector: string, handler: () => void, condition = true) => {
+      if (!condition) return;
+      
+      const element = this.container!.querySelector(selector);
+      if (element) {
+        element.addEventListener('click', () => {
+          this.hide();
+          handler();
+        });
+      }
+    };
+
+    addClick('.tour-btn-next', () => this.onNext?.());
+    addClick('.tour-btn-prev', () => this.onPrev?.(), !isFirstStep);
+    addClick('.tour-btn-skip', () => this.onSkip?.());
+    addClick('.tour-btn-close', () => this.onSkip?.());
+
+    if (!this.isMobile) {
+      this.addHoverEffects();
+    }
+  }
+
+  private addHoverEffects(): void {
+    if (!this.container) return;
+
+    // Card hover effect
+    this.container.addEventListener('mouseenter', () => {
+      this.container!.style.boxShadow = '0 25px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15) inset';
+      this.container!.style.transform = 'scale(1.02) translateY(-2px)';
+    });
+    
+    this.container.addEventListener('mouseleave', () => {
+      this.container!.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset';
+      this.container!.style.transform = 'scale(1) translateY(0)';
+    });
+
+    // Button hover effects
+    const addHover = (selector: string, enter: (el: HTMLElement) => void, leave: (el: HTMLElement) => void) => {
+      const el = this.container!.querySelector(selector) as HTMLElement;
+      if (el) {
+        el.addEventListener('mouseenter', () => enter(el));
+        el.addEventListener('mouseleave', () => leave(el));
+      }
+    };
+
+    // Next button
+    addHover('.tour-btn-next', 
+      (el) => {
+        el.style.transform = 'translateY(-2px)';
+        el.style.boxShadow = '0 8px 30px rgba(89, 13, 242, 0.6)';
+        el.style.background = 'linear-gradient(135deg, #6a1bf9, #9b4cf9)';
+      },
+      (el) => {
+        el.style.transform = '';
+        el.style.boxShadow = '0 4px 20px rgba(89, 13, 242, 0.4)';
+        el.style.background = 'linear-gradient(135deg, #590df2, #8a2be2)';
+      }
+    );
+
+    // Back button (only if not disabled)
+    addHover('.tour-btn-prev:not(:disabled)',
+      (el) => {
+        el.style.background = 'rgba(89, 13, 242, 0.45)';
+        el.style.transform = 'translateY(-2px)';
+      },
+      (el) => {
+        el.style.background = 'rgba(89, 13, 242, 0.33)';
+        el.style.transform = '';
+      }
+    );
+
+    // Skip button
+    addHover('.tour-btn-skip',
+      (el) => {
+        el.style.background = 'rgba(255, 255, 255, 0.15)';
+        el.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+      },
+      (el) => {
+        el.style.background = 'rgba(255, 255, 255, 0.08)';
+        el.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+      }
+    );
+
+    // Close button
+    addHover('.tour-btn-close',
+      (el) => {
+        el.style.background = 'rgba(255, 255, 255, 0.2)';
+        el.style.transform = 'rotate(90deg)';
+      },
+      (el) => {
+        el.style.background = 'rgba(255, 255, 255, 0.1)';
+        el.style.transform = 'rotate(0deg)';
+      }
+    );
+  }
+
+  private animateIn(): void {
+    requestAnimationFrame(() => {
+      if (this.container) {
+        this.container.style.opacity = "1";
+        this.container.style.transform = this.isMobile 
+          ? "translateX(-50%) scale(1) translateY(0)"
+          : "scale(1) translateY(0)";
+      }
+      if (this.arrow && !this.isMobile) {
+        this.arrow.style.opacity = "1";
+        // Replace scale(0) with scale(1) in the transform
+        const currentTransform = this.arrow.style.transform;
+        this.arrow.style.transform = currentTransform.replace('scale(0)', 'scale(1)');
+      }
+    });
+  }
+
+  hide(): void {
+    if (this.arrow) {
+      this.arrow.remove();
+      this.arrow = null;
+    }
+    
+    if (this.container) {
+      this.container.style.opacity = "0";
+      this.container.style.transform = this.isMobile
+        ? "translateX(-50%) scale(0.95) translateY(10px)"
+        : "scale(0.95) translateY(10px)";
+      
+      setTimeout(() => {
+        if (this.container) {
+          this.container.remove();
+          this.container = null;
+        }
+      }, 200);
+    }
+  }
+}
