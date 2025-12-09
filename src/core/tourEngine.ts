@@ -24,6 +24,12 @@ export class TourEngine {
     await this.showStep(this.stepManager.getCurrentStepIndex());
   }
 
+  reset(){
+    this.stepManager?.reset();
+    this.spotlight.hide();
+    this.tooltip.hide();
+  }
+
   private async showStep(index: number) {
     if (!this.config || !this.stepManager) return;
     const step = this.config?.steps[index];
@@ -104,4 +110,5 @@ export class TourEngine {
     this.spotlight.hide();
     this.tooltip.hide();
   }
+  
 }

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboardly Production Build Test</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #f3f4f6;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        button {
+            background: #590df2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1 id="welcome-msg">Production Build Test</h1>
+        <p>This page tests if <code>dist/onboardly.js</code> loads correctly.</p>
+        <button id="action-btn">Click Me</button>
+    </div>
+
+    <!-- Load the built widget -->
+    <script src="https://timely-kheer-6c719b.netlify.app/onboardly.js"></script>
+
+    <script>
+        window.addEventListener('load', () => {
+            if (!window.TourWidget) {
+                alert('Error: TourWidget not found. Did you run pnpm build?');
+                return;
+            }
+
+            window.TourWidget.initWithConfig({
+                tourId: 'build-test-tour',
+                steps: [
+                    {
+                        id: 'step-1',
+                        targetSelector: '#welcome-msg',
+                        title: 'Build Successful!',
+                        content: 'The widget script is loaded correctly from the dist/ folder.',
+                        placement: 'top'
+                    },
+                    {
+                        id: 'step-2',
+                        targetSelector: '#action-btn',
+                        title: 'Interactive',
+                        content: 'You can interact with elements nicely.',
+                        placement: 'bottom'
+                    }
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
