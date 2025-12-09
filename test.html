@@ -561,6 +561,31 @@
       </div>
     </footer>
 
+    <!-- How it would be on external websites -->
+    <script>
+      // Simulate loading the widget script from a CDN
+      (function () {
+        const script = document.createElement("script");
+        script.src =
+          "https://cdn.onboardly.com/widget/latest/onboardly-widget.min.js";
+        script.async = true;
+        document.head.appendChild(script);
+      })();
+    </script>
+
+    <!-- Then initiate with their tourid or config json -->
+    <script>
+      // Wait for the widget script to load
+      window.addEventListener("load", () => {
+        if (!window.TourWidget) {
+          console.error("TourWidget not found on window!");
+          return;
+        }
+
+        window.TourWidget.init("demo-tour");
+      });
+    </script>
+
     <!-- Import as ES module during dev (Vite serves /src/main.ts directly) -->
     <script type="module">
       import "/src/main.ts";
