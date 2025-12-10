@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Flexbox Test</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, sans-serif;
+        background: #f8fafc;
+        padding: 40px;
+        color: #334155;
+      }
+
+      h2 {
+        margin-top: 40px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
+      }
+
+      .test-section {
+        margin-bottom: 40px;
+      }
+
+      /* Test 1: Nested Flex & Alignment */
+      .flex-parent-1 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 150px;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .flex-child-1 {
+        background: #e0f2fe;
+        border: 1px solid #7dd3fc;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .flex-nested-container {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        background: #f0fdf4;
+        padding: 10px;
+        border: 1px dashed #86efac;
+      }
+
+      /* Test 2: Wrapping & Growing */
+      .flex-parent-2 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+      }
+      .flex-grow-item {
+        flex: 1 1 150px;
+        background: #fef3c7;
+        border: 1px solid #fcd34d;
+        padding: 20px;
+        text-align: center;
+        border-radius: 4px;
+      }
+      .flex-static-item {
+        flex: 0 0 100px;
+        background: #fce7f3;
+        border: 1px solid #f9a8d4;
+        padding: 20px;
+        text-align: center;
+        border-radius: 4px;
+      }
+
+      /* Test 3: Vertical Alignment & Baseline */
+      .flex-parent-3 {
+        display: flex;
+        align-items: baseline;
+        height: 200px;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+      }
+      .flex-tall {
+        height: 100px;
+        background: #ede9fe;
+        padding: 10px;
+        font-size: 2rem;
+      }
+      .flex-short {
+        background: #fae8ff;
+        padding: 10px;
+        font-size: 1rem;
+      }
+
+      /* Test 4: Reverse Direction */
+      .flex-parent-4 {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 10px;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+      }
+      .flex-item-rev {
+        background: #ccfbf1;
+        padding: 15px;
+        border: 1px solid #5eead4;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Flexbox Stress Test</h1>
+
+    <div class="test-section">
+      <h2>1. Nested Container & Alignment</h2>
+      <div class="flex-parent-1" id="test1-container">
+        <div class="flex-child-1" id="test1-item1">Item 1</div>
+        <div class="flex-nested-container" id="test1-nested">
+          <div>Nested 1</div>
+          <div>Nested 2</div>
+        </div>
+        <div
+          class="flex-child-1"
+          style="align-self: flex-start"
+          id="test1-item3"
+        >
+          Item 3 (Self Start)
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>2. Wrap & Grow</h2>
+      <div class="flex-parent-2" id="test2-container">
+        <div class="flex-grow-item" id="test2-grow">Grow 1</div>
+        <div class="flex-grow-item">Grow 2</div>
+        <div class="flex-static-item" id="test2-static">Static 100px</div>
+        <div class="flex-grow-item">Grow 3</div>
+        <div class="flex-grow-item">Grow 4</div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>3. Baseline Alignment</h2>
+      <div class="flex-parent-3" id="test3-container">
+        <div class="flex-tall" id="test3-tall">Big Text</div>
+        <div class="flex-short" id="test3-short">Small Text</div>
+        <div class="flex-tall" style="font-size: 1.5rem">Medium</div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>4. Row Reverse</h2>
+      <div class="flex-parent-4" id="test4-container">
+        <div class="flex-item-rev" id="test4-1">1</div>
+        <div class="flex-item-rev" id="test4-2">2</div>
+        <div class="flex-item-rev" id="test4-3">3</div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+    <script>
+      window.addEventListener("load", () => {
+        // Let styles settle
+        setTimeout(() => {
+          const config = {
+            tourId: "flex-stress-test",
+            steps: [
+              {
+                id: "step-1",
+                targetSelector: "#test1-container",
+                title: "Space Between Container",
+                content:
+                  "The container has space-between. Spotlight should match full width.",
+                placement: "top",
+              },
+              {
+                id: "step-2",
+                targetSelector: "#test1-nested",
+                title: "Nested Flex Col",
+                content: "This is a column flex inside a row flex.",
+                placement: "right",
+              },
+              {
+                id: "step-3",
+                targetSelector: "#test1-item3",
+                title: "Align Self",
+                content:
+                  "This item overrides parent alignment (align-self: flex-start).",
+                placement: "left",
+              },
+              {
+                id: "step-4",
+                targetSelector: "#test2-grow",
+                title: "Flex Grow Item",
+                content: "This item grows to fill space.",
+                placement: "bottom",
+              },
+              {
+                id: "step-5",
+                targetSelector: "#test2-static",
+                title: "Flex Static Item",
+                content: "This item has fixed width even in a flex container.",
+                placement: "top",
+              },
+              {
+                id: "step-6",
+                targetSelector: "#test3-container",
+                title: "Baseline Container",
+                content: "Items aligned by baseline.",
+                placement: "top",
+              },
+              {
+                id: "step-7",
+                targetSelector: "#test4-container",
+                title: "Reverse Direction",
+                content: "Row reverse direction.",
+                placement: "bottom",
+              },
+            ],
+          };
+
+          window.TourWidget.initWithConfig(config);
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

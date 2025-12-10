@@ -1,9 +1,13 @@
 export class Spotlight {
   private overlay: HTMLDivElement | null = null;
   private clone: HTMLElement | null = null;
+  private originalOverflow: string = "";
 
   show(targetElemnt: Element) {
     this.hide();
+
+    this.originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     // Create dark overlay
     this.overlay = document.createElement("div");
@@ -24,7 +28,7 @@ export class Spotlight {
     const computedStyle = window.getComputedStyle(targetElemnt);
 
     this.clone = (targetElemnt as HTMLElement).cloneNode(true) as HTMLElement;
-    this.clone.className = "tour-spotlight-clone";
+    this.clone.classList.add("tour-spotlight-clone");
 
     // Copy computed styles from original element
     this.clone.style.cssText = `
@@ -48,10 +52,15 @@ export class Spotlight {
     line-height: ${computedStyle.lineHeight};
     padding: ${computedStyle.padding};
     border: ${computedStyle.border};
+    margin: 0;
+    box-sizing: ${computedStyle.boxSizing};
     text-align: ${computedStyle.textAlign};
     display: ${computedStyle.display};
     align-items: ${computedStyle.alignItems};
     justify-content: ${computedStyle.justifyContent};
+    flex-direction: ${computedStyle.flexDirection};
+    flex-wrap: ${computedStyle.flexWrap};
+    gap: ${computedStyle.gap};
     `;
 
     document.body.appendChild(this.overlay);
@@ -64,6 +73,7 @@ export class Spotlight {
   }
   hide() {
     if (this.overlay) {
+      document.body.style.overflow = this.originalOverflow;
       this.overlay.remove();
       this.overlay = null;
     }

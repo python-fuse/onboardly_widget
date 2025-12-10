@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complex Layout Test</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f2f5;
+        height: 200vh; /* Force scroll */
+      }
+
+      /* Sticky Header */
+      nav.sticky-nav {
+        position: sticky;
+        top: 0;
+        background: #2c3e50;
+        color: white;
+        padding: 1rem;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* Fixed Sidebar */
+      aside.fixed-sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 200px;
+        height: calc(100vh - 60px);
+        background: #fff;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        z-index: 500;
+        overflow-y: auto;
+      }
+
+      /* Main Content */
+      main {
+        margin-left: 220px;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+
+      /* Hero Section with Transform */
+      .hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 3rem;
+        transform: perspective(1000px) rotateX(2deg);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      /* CSS Grid Layout */
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+      .grid-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.2s;
+      }
+      .grid-item:hover {
+        transform: translateY(-5px);
+      }
+
+      /* Flexbox Complexities */
+      .flex-complex {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        background: #fff;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        border: 2px dashed #cbd5e0;
+      }
+      .flex-item {
+        background: #edf2f7;
+        padding: 1rem;
+        flex: 1 1 200px;
+        border: 1px solid #cbd5e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Nested Scroll & Overflow */
+      .nested-scroll {
+        height: 200px;
+        overflow-y: scroll;
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 3rem;
+        position: relative;
+      }
+      .scroll-target {
+        margin-top: 400px; /* Push it down */
+        background: #fefcbf;
+        padding: 1rem;
+        border: 1px solid #d69e2e;
+      }
+
+      /* Box Sizing Chaos */
+      .box-sizing-content {
+        box-sizing: content-box;
+        width: 100%;
+        padding: 20px;
+        border: 10px solid #fc8181;
+        background: #fff5f5;
+        margin-bottom: 3rem;
+      }
+
+      /* Absolute Positioning */
+      .relative-parent {
+        position: relative;
+        height: 300px;
+        background: #e6fffa;
+        border: 1px solid #38b2ac;
+        margin-bottom: 3rem;
+      }
+      .absolute-child {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background: #38b2ac;
+        color: white;
+        padding: 1rem;
+        border-radius: 4px;
+      }
+
+      /* Z-Index Test */
+      .z-stack {
+        position: relative;
+        margin-bottom: 3rem;
+      }
+      .z-1 {
+        background: #feb2b2;
+        padding: 2rem;
+        position: relative;
+        z-index: 10;
+      }
+      .z-2 {
+        background: #90cdf4;
+        padding: 2rem;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 20;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="sticky-nav" id="nav-target">
+      <div class="logo">ComplexApp</div>
+      <div class="nav-links">
+        <a href="#" style="color: white; margin-right: 1rem">Home</a>
+        <a href="#" style="color: white">Settings</a>
+      </div>
+    </nav>
+
+    <aside class="fixed-sidebar" id="sidebar-target">
+      <h3>Sidebar</h3>
+      <ul>
+        <li>Dashboard</li>
+        <li>Messages</li>
+        <li>Analytics</li>
+      </ul>
+    </aside>
+
+    <main>
+      <div class="hero" id="hero-target">
+        <h1>Testing 3D Transforms</h1>
+        <p>This element has a perspective and rotation applied.</p>
+      </div>
+
+      <section class="grid-container">
+        <div class="grid-item" id="grid-1">Grid Item 1</div>
+        <div class="grid-item">Grid Item 2</div>
+        <div class="grid-item">Grid Item 3</div>
+        <div class="grid-item">Grid Item 4</div>
+      </section>
+
+      <section class="flex-complex" id="flex-target">
+        <div class="flex-item">Flex 1</div>
+        <div class="flex-item">Flex 2</div>
+        <div class="flex-item">Flex 3</div>
+      </section>
+
+      <section class="nested-scroll" id="scroll-container">
+        <p>Scroll down to find the target...</p>
+        <div class="scroll-target" id="scroll-target">
+          I am inside a scrollable div!
+        </div>
+      </section>
+
+      <section class="box-sizing-content" id="box-sizing-target">
+        I use <code>box-sizing: content-box</code> with fat borders.
+      </section>
+
+      <section class="relative-parent">
+        <div class="absolute-child" id="absolute-target">
+          Absolutely Positioned
+        </div>
+      </section>
+
+      <div style="height: 500px"></div>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+    <script>
+      // Wait for module to load and init
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          const config = {
+            tourId: "complex-tour-v1",
+            steps: [
+              {
+                id: "step-1",
+                targetSelector: "#nav-target",
+                title: "Sticky Navigation",
+                content:
+                  "This navbar stays at the top. The spotlight should handle `position: sticky` correctly.",
+                placement: "bottom",
+              },
+              {
+                id: "step-2",
+                targetSelector: "#sidebar-target",
+                title: "Fixed Sidebar",
+                content: "This sidebar is `position: fixed`.",
+                placement: "right",
+              },
+              {
+                id: "step-3",
+                targetSelector: "#hero-target",
+                title: "Transformed Element",
+                content:
+                  "This element is rotated in 3D space. The spotlight usually fails here if not careful.",
+                placement: "bottom",
+              },
+              {
+                id: "step-4",
+                targetSelector: "#grid-1",
+                title: "Grid Item",
+                content: "A simple grid item.",
+                placement: "right",
+              },
+              {
+                id: "step-5",
+                targetSelector: "#flex-target",
+                title: "Flex Container",
+                content: "A flex container with `gap` and `justify-content`.",
+                placement: "top",
+              },
+              {
+                id: "step-6",
+                targetSelector: "#scroll-target",
+                title: "Nested Scroll",
+                content: "This element is deep inside a scrollable div.",
+                placement: "top",
+              },
+              {
+                id: "step-7",
+                targetSelector: "#box-sizing-target",
+                title: "Content Box",
+                content:
+                  "This element uses `content-box`. Its size calculation should include padding/borders correctly.",
+                placement: "top",
+              },
+              {
+                id: "step-8",
+                targetSelector: "#absolute-target",
+                title: "Absolute Position",
+                content: "Positioned absolutely relative to a container.",
+                placement: "left",
+              },
+            ],
+          };
+
+          console.log("Starting Complex Tour...");
+          window.TourWidget.initWithConfig(config);
+        }, 1000); // Small delay to ensure everything is settled
+      });
+    </script>
+  </body>
+</html>

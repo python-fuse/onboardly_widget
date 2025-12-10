@@ -2,6 +2,7 @@ import { trackEvent } from "../analytics";
 import { TourConfig } from "../types";
 import { Spotlight } from "../ui/Spotlight";
 import { ToolTip } from "../ui/Tooltip";
+import { ResetButton } from "../ui/ResetButton";
 import { scrollToElement, waitForElement } from "../utils/dom";
 import { StepManager } from "./stepManager";
 
@@ -10,10 +11,12 @@ export class TourEngine {
   private stepManager: StepManager | null = null;
   private spotlight = new Spotlight();
   private tooltip = new ToolTip();
+  private resetButton = new ResetButton(() => this.handleReset());
 
   async start(config: TourConfig) {
     this.config = config;
     this.stepManager = new StepManager(config.tourId);
+    this.resetButton.show();
 
     // Check if already completed
     if (this.stepManager.isCompleted()) {
@@ -24,7 +27,7 @@ export class TourEngine {
     await this.showStep(this.stepManager.getCurrentStepIndex());
   }
 
-  reset(){
+  reset() {
     this.stepManager?.reset();
     this.spotlight.hide();
     this.tooltip.hide();
@@ -110,5 +113,15 @@ export class TourEngine {
     this.spotlight.hide();
     this.tooltip.hide();
   }
-  
+
+  private async handleReset() {
+    if (!this.config) return;
+    this.reset();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Wait for scroll to complete
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await this.start(this.config);
+  }
 }
