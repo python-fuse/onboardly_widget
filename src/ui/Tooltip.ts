@@ -195,7 +195,7 @@ export class ToolTip {
     return styles[type] + ' cursor: pointer; transition: all 0.2s ease;';
   }
 
-  private positionTooltip(targetElement: Element, placement?: string): void {
+  private positionTooltip(targetElement: Element, placement: "top" | "bottom" | "left" | "right" = "top"): void {
     if (!this.container) return;
     
     const targetBounds = targetElement.getBoundingClientRect();
@@ -225,7 +225,7 @@ export class ToolTip {
         targetBounds,
         toolTipRect.width,
         toolTipRect.height,
-        placement || 'top'
+        placement
       );
     }
 

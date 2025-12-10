@@ -3,8 +3,7 @@ export function trackEvent(
   eventType: string,
   data?: Record<string, any>
 ): void {
-  // Send to your dashboard API
-  fetch("https://befitting-chicken-939.convex.site/analytics", {
+  fetch("https://colorless-poodle-381.convex.site/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

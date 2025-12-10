@@ -1,20 +1,26 @@
 import { TourConfig } from "../types";
 
 export class ConfigLoader {
-  async loadConfig(tourId: string, configObject?: TourConfig) {
-    if (configObject) return configObject;
+  async loadConfig(tourId: string) {
+    try {
+      const res = await fetch(
+        "https://colorless-poodle-381.convex.cloud/api/query",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            path: "public:getTourByScriptId",
+            args: { scriptId: tourId },
+            format: "json",
+          }),
+        }
+      );
 
-    const response = await fetch(`https://google.com/${tourId}`);
+      const data = await res.json();
 
-    if (!response.ok) {
-      throw new Error(`Failed toload config: ${response.statusText}`);
+      return data.value as TourConfig;
+    } catch {
+      throw new Error("Error while fetching config");
     }
-
-    const config: TourConfig = await response.json();
-    if (!config.steps || config.steps.length < 5) {
-      throw new Error("Tour must have at least 5 steps");
-    }
-
-    return config;
   }
 }

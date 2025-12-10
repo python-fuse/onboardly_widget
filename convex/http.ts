@@ -22,7 +22,10 @@ http.route({
     const { tourId, eventType, timestamp, ...rest } = body;
 
     if (!tourId || !eventType || !timestamp) {
-      return new Response("Missing required fields: tourId, eventType, timestamp", { status: 400, headers });
+      return new Response(
+        "Missing required fields: tourId, eventType, timestamp",
+        { status: 400, headers }
+      );
     }
 
     await ctx.runMutation(api.analytics.logEvent, {
